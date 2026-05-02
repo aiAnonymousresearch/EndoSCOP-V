@@ -1,0 +1,233 @@
+# ===========================================================
+# EndoSCOP-V — Benchmark Configuration
+# ===========================================================
+# Edit this file to configure data paths, credentials, and
+# which models to evaluate.
+# ===========================================================
+
+# --- Paths ---
+paths:
+  dataverse_zip: ./data/dataverse_files.zip          # Downloaded from Dataverse
+  cases_dir: ./data/cases/                           # Created by prepare_data.sh
+  results_dir: ./evaluations/evaluated_cases/        # Per-model prediction JSONs
+
+# --- Credentials ---
+# Primary: set as environment variables (export HF_TOKEN=hf_...).
+# Fallback: uncomment *_file lines and point to a file containing the key.
+# Code checks env var first, then file path.
+#
+# HF token: required for gated models (MedGemma).
+#   1. Get token: https://huggingface.co/settings/tokens
+#   2. export HF_TOKEN=hf_...  (or: hf auth login)
+#   3. Accept each gated model's license on its HuggingFace page.
+credentials:
+  hf_token_env: HF_TOKEN
+  # hf_token_file: /path/to/hf_token.txt
+
+  # Gemini — choose ONE of these two methods:
+  #   Method 1: API key (simpler) — get from https://aistudio.google.com/apikey
+  gemini_api_key_env: GOOGLE_API_KEY
+  # gemini_api_key_file: /path/to/google.key
+  #   Method 2: Vertex AI (enterprise) — service account JSON
+  # google_app_credentials_env: GOOGLE_APPLICATION_CREDENTIALS
+  # google_app_credentials_file: /path/to/project-xxxx.json
+
+  anthropic_api_key_env: ANTHROPIC_API_KEY
+  # anthropic_api_key_file: /path/to/anthropic.key
+
+  openai_api_key_env: OPENAI_API_KEY
+  # openai_api_key_file: /path/to/openai.key
+
+# --- Default model parameters ---
+defaults:
+  temperature: 0.0
+  max_new_tokens: 1024          # Bumped from 512 — thinking-mode answers can run long
+  device: auto                  # "auto", "cuda:0", "cuda:1", "cpu"
+
+# --- Frame extraction ---
+# Pre-extracted 896x896 frames needed for models that use frame input.
+# Models with frames: 0 use raw video — no frame extraction needed.
+# Run: python eval/extract_frames.py  (also called automatically by prepare_data.sh)
+frames:
+  resolution: 896
+  max_frames: 800               # Max frames extracted per video
+  subdir_suffix: _siglip_896    # Stored in {case_id}_siglip_896/
+  workers: 4                    # Parallel threads for frame extraction
+
+# --- Transformers-family provider defaults ---
+# Applies to transformers / hulumed / colonr1 providers (eval/run.py merges
+# these as the base, then overlays provider-name-specific blocks if any).
+transformers:
+  torch_dtype: auto
+  attn_implementation: sdpa
+  trust_remote_code: true
+
+# --- Models to evaluate ---
+# Set enabled: true/false to include/exclude a model.
+# results_name: directory name used in evaluated_cases/ for this model.
+# frames: 0 means send raw video (video-native models).
+# frames: N means uniformly sample N pre-extracted frames.
+models:
+
+  # ── API models (need API key, no GPU) ──────────────────
+
+  gemini-flash:
+    provider: gemini
+    model: gemini-3-flash-preview
+    results_name: Gemini-3-Flash-Preview
+    enabled: true
+    frames: 0                   # native video input
+    provider_config:
+      vertex_location: global   # Gemini 3 preview is served on "global"
+
+  claude-sonnet:
+    provider: anthropic
+    model: claude-sonnet-4-6
+    results_name: Claude-Sonnet-4.6
+    enabled: true
+    frames: 100                 # Anthropic API caps request body at ~32 MB; >~100 base64 896² JPEGs trips 413
+    notes: "Requires ANTHROPIC_API_KEY. Uniformly samples N frames from _siglip_896/."
+
+  gpt-5.4-mini:
+    provider: openai
+    model: gpt-5.4-mini
+    results_name: GPT-5.4-mini
+    enabled: true
+    frames: 200                 # Frames-only model (no native video input)
+    notes: "Requires OPENAI_API_KEY. Uniformly samples N frames from _siglip_896/."
+
+  # ── Open-source general VLMs (need GPU + HuggingFace) ──
+
+  qwen3-vl-8b:
+    provider: transformers
+    model: Qwen/Qwen3-VL-8B-Instruct
+    results_name: Qwen3-VL-8B
+    enabled: true
+    frames: 100
+    provider_config:
+      enable_thinking: false
+
+  qwen3-vl-32b:
+    provider: transformers
+    model: Qwen/Qwen3-VL-32B-Instruct
+    results_name: Qwen3-VL-32B
+    enabled: true
+    frames: 100
+    provider_config:
+      enable_thinking: false
+
+  qwen3.5-4b:
+    provider: transformers
+    model: Qwen/Qwen3.5-4B
+    results_name: Qwen3.5-4B
+    enabled: true
+    frames: 100
+    provider_config:
+      enable_thinking: false    # defaults to thinking mode otherwise
+
+  qwen3.5-9b:
+    provider: transformers
+    model: Qwen/Qwen3.5-9B
+    results_name: Qwen3.5-9B
+    enabled: true
+    frames: 100
+    provider_config:
+      enable_thinking: false
+
+  qwen3.5-27b:
+    provider: transformers
+    model: Qwen/Qwen3.5-27B
+    results_name: Qwen3.5-27B
+    enabled: true
+    frames: 100
+    provider_config:
+      enable_thinking: false
+
+  qwen3.6-27b:
+    provider: transformers
+    model: Qwen/Qwen3.6-27B
+    results_name: Qwen3.6-27B
+    enabled: true
+    frames: 100
+    provider_config:
+      enable_thinking: false
+
+  # ── Open-source medical models (need GPU + HuggingFace) ─
+
+  medgemma-4b:
+    provider: transformers
+    model: google/medgemma-4b-it
+    results_name: MedGemma-4b-it
+    enabled: true
+    frames: 200
+    notes: "Gated — accept license at huggingface.co/google/medgemma-4b-it"
+
+  medgemma-1.5-4b:
+    provider: transformers
+    model: google/medgemma-1.5-4b-it
+    results_name: MedGemma-1.5-4b-it
+    enabled: true
+    frames: 200
+    notes: "Gated — accept license at huggingface.co/google/medgemma-1.5-4b-it"
+
+  medgemma-27b:
+    provider: transformers
+    model: google/medgemma-27b-it
+    results_name: MedGemma-27b-it
+    enabled: true
+    frames: 200
+    notes: "Gated — needs multi-GPU or quantization for <80GB VRAM"
+
+  hulu-med-4b:
+    provider: hulumed
+    model: ZJU-AI4H/Hulu-Med-4B
+    results_name: Hulu-Med-4B
+    enabled: true
+    frames: 16                  # Hard cap: 16K context limit
+    notes: "Requires trust_remote_code. 16 frames is the max (16K context)."
+    provider_config:
+      trust_remote_code: true
+
+  hulu-med-7b:
+    provider: hulumed
+    model: ZJU-AI4H/Hulu-Med-7B
+    results_name: Hulu-Med-7B
+    enabled: true
+    frames: 16
+    provider_config:
+      trust_remote_code: true
+
+  hulu-med-14b:
+    provider: hulumed
+    model: ZJU-AI4H/Hulu-Med-14B
+    results_name: Hulu-Med-14B
+    enabled: true
+    frames: 16
+    notes: "Needs >48GB VRAM"
+    provider_config:
+      trust_remote_code: true
+
+  hulu-med-32b:
+    provider: hulumed
+    model: ZJU-AI4H/Hulu-Med-32B
+    results_name: Hulu-Med-32B
+    enabled: true
+    frames: 16
+    notes: "Needs >80GB VRAM"
+    provider_config:
+      trust_remote_code: true
+
+  # ── Specialized colonoscopy model ─────────────────────
+
+  colonr1:
+    provider: colonr1
+    model: ai4colonoscopy/ColonR1
+    results_name: ColonR1
+    enabled: true
+    frames: 25                  # 32K context, 896^2 -> 25 frames max
+    procedure_filter: colonoscopy
+    notes: "Colonoscopy-only model. Skip pure-endoscopy cases."
+
+# --- Summarization ---
+summary:
+  task_taxonomy: ./data/task_taxonomy.csv   # Full task/subtask names for Excel headers

@@ -1,0 +1,32 @@
+Task,Sub-task,Abbr,Description,Video Advantage
+Disease Identification (DI),MCQ Identification,DI-M,Identify disease from 4 options,"Multi-angle, temporal context"
+Disease Identification (DI),Confirmation,DI-C,Confirm suspected disease,"Multi-angle, temporal context"
+Disease Identification (DI),Rejection,DI-R,Reject distractor disease,"Multi-angle, temporal context"
+Disease Identification (DI),Normal Assessment,DI-N,Identify absence of pathology at a location,Full mucosal sweep of region
+Anatomical Localization (AL),Organ,AL-O,Upper GI organ identification,Navigational context
+Anatomical Localization (AL),Part / Segment,AL-P,Sub-organ segment localization,Scope entry into segment visible
+Anatomical Localization (AL),Wall,AL-W,Gastric / duodenal wall identification,Orientation cues from movement
+Morphological Assessment (MA),Shape & Type,MA-T,"Sessile, flat, pedunculated, polypoid",Multi-angle reveals stalk & base
+Morphological Assessment (MA),Surface,MA-S,"Smooth, granular, nodular, ulcerated",Dynamic light reflections
+Morphological Assessment (MA),Color,MA-C,Lesion color assessment,Multiple frames reduce lighting bias
+Morphological Assessment (MA),Margins,MA-M,Well-demarcated vs ill-defined,Scope movement reveals border
+Morphological Assessment (MA),Size,MA-SZ,Size estimation in mm bins,Depth cues from parallax
+Pathological Feature Assessment (PF),Distribution & Extent,PF-D,"Localized, patchy, diffuse, continuous",Scope traversal shows spread
+Pathological Feature Assessment (PF),Mucosal Features,PF-M,"Erythematous, edematous, friable",Friability = contact bleeding (temporal)
+Pathological Feature Assessment (PF),Ulcer / Erosion Features,PF-U,"Aphthous, shallow, deep, undermined",Depth perception from multiple angles
+Pathological Feature Assessment (PF),Tissue Features,PF-S,"Red signs, chronic changes, scarring",Red spots pulsate (temporal)
+Pathological Feature Assessment (PF),Contents & Base,PF-B,"Clean base, slough, fibrin, discharge",Fluid movement is temporal
+Quantification (QN),Lesion Count,QN-L,Number of lesions along the tract,Sequential encounter during traversal
+Quantification (QN),Structure Count,QN-S,"Variceal columns, bands",360-degree sweep reveals all columns
+Grading & Scoring (GS),Morphological Classification,GS-MC,"Paris, Kudo, NICE, JNET",Multi-angle for pit pattern assessment
+Grading & Scoring (GS),Severity Scoring,GS-SS,"Mayo, UCEIS, SES-CD, Forrest, Kodsi, Zargar, EREFS",Bleeding component requires video
+Grading & Scoring (GS),Extent Classification,GS-EC,"Prague, Montreal, LA Grade, Kimura-Takemoto",Scope traversal measures extent
+Grading & Scoring (GS),Anatomical Grading,GS-AG,"Hills, Ampulla Type, Goligher, Variceal Grade",Retroflex / dynamic viewing
+Complication Recognition (CF),Bleeding,CF-B,"Active bleeding type, source",Oozing vs spurting is temporal (exclusive)
+Complication Recognition (CF),Stricture & Obstruction,CF-S,"Presence, traversability, features",Scope passage is video-exclusive
+Complication Recognition (CF),Associated Findings,CF-A,"Surrounding mucosa, co-existing features",Scope panning reveals surroundings
+Clinical Reasoning (CR),Etiology & Context,CR-E,Suspected etiology or likely context,Integrates multiple temporal cues
+Clinical Reasoning (CR),Impression & Activity,CR-I,"Final clinical impression, disease activity",Synthesizes full video evidence
+Action Recognition (AR),Biopsy,AR-B,Biopsy performed in video,Procedural action (video-exclusive)
+Action Recognition (AR),Visualization,AR-V,Anatomical structure examined in video,Navigation event (video-exclusive)
+"9 tasks, 30 sub-tasks. Four sub-tasks are video-exclusive (CF-B, CF-S, AR-B, AR-V) — fundamentally impossible to evaluate from single images",,,,

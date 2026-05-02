@@ -1,0 +1,41 @@
+# EndoSCOP-V benchmark dependencies.
+# pip install -r requirements.txt
+#
+# For GPU (PyTorch with CUDA): install torch first from https://pytorch.org
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+# Then install the rest:
+#   pip install -r requirements.txt
+
+# ── Core (frame extraction + evaluation) ─────────────────
+tqdm>=4.60
+pyyaml>=6.0
+numpy>=1.24
+
+# ── Frame extraction (extract_frames.py) ─────────────────
+opencv-contrib-python>=4.5
+
+# ── Evaluation pipeline (all local models) ────────────────
+torch>=2.5
+transformers>=4.52
+accelerate>=0.30
+sentencepiece>=0.1.99
+Pillow>=10.0
+huggingface_hub>=0.20
+
+# ── Result summarization (summarize.py) ──────────────────
+XlsxWriter>=3.1
+
+# ── Hulu-Med models (required by model's dynamic code) ───
+decord>=0.6.0
+ffmpeg-python>=0.2.0
+imageio>=2.30
+
+# ── Large model quantization (optional, for >14B on <80GB VRAM) ──
+# bitsandbytes>=0.42
+
+# ── API providers ────────────────────────────────────────
+# Required by gemini, openai, anthropic providers in eval/providers/.
+# Comment out any you don't plan to use to skip the install.
+google-genai>=1.0              # Gemini — supports both AI Studio API key and Vertex AI
+openai>=2.33                   # GPT-5.x (uses max_completion_tokens)
+anthropic>=0.30                # Claude
